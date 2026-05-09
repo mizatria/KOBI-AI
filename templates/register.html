@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Oluştur - KOBİ AI</title>
+    <!-- BURAYI DÜZELTTİK: style.css yerine register.css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/register.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Sol Taraf: Form -->
+        <div class="form-section">
+            <h2>Hesap Oluştur</h2>
+            <form id="registerForm">
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Ad</label>
+                        <input type="text" name="first_name" placeholder="Adınızı giriniz" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" name="username" placeholder="Kullanıcı adı giriniz" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Soyad</label>
+                        <input type="text" name="last_name" placeholder="Soyadınızı giriniz" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Şirket Adı</label>
+                        <input type="text" name="company_name" placeholder="Şirket adı giriniz" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="Email adresinizi giriniz" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Şifre</label>
+                        <input type="password" name="password" placeholder="Şifre giriniz" required>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <a href="#">terms & policy</a></label>
+                </div>
+
+                <button type="submit" class="signup-btn">Kayıt Ol!</button>
+            </form>
+        </div>
+        <div class="image-section">
+            <img src="{{ url_for('static', path='/img/kargo.png') }}" alt="Kargo Paketleme">
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='/js/register.js') }}"></script>
+</body>
+</html>

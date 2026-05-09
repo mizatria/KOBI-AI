@@ -12,11 +12,16 @@ from datetime import datetime,timedelta,timezone
 from typing import Annotated
 import os
 from dotenv import load_dotenv
+from fastapi import Request
+from fastapi.templating import Jinja2Templates
+
 
 router=APIRouter(
     prefix="/auth",
     tags=["authentication"]
 )
+
+templates = Jinja2Templates(directory="templates")
 
 bcrypt_context=CryptContext(schemes=["bcrypt"],deprecated="auto")
 load_dotenv()
@@ -64,6 +69,12 @@ async def get_current_vendor(token:Annotated[str, Depends(oauth2_bearer)]):
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Token is invalid")
 
+@router.get("/register")
+async def render_register_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="register.html",
+        context={"request": request})
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(
