@@ -1,0 +1,9 @@
+fastapi
+bcrypt==4.0.1
+cryptography
+SQLAlchemy
+uvicorn
+python-multipart
+passlib
+python-jose
+python-dotenv
