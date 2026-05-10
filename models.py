@@ -22,4 +22,14 @@ class Product(Base):
     min_stock_limit=Column(Float)
     unit=Column(String)
     category=Column(String)
-    suppplier_id=Column(Integer,ForeignKey('suppliers.id'))
+    supplier_id=Column(Integer,ForeignKey('suppliers.id'))
+
+class Supplier(Base):
+    __tablename__='suppliers'
+    id=Column(Integer,primary_key=True)
+    first_name=Column(String)
+    last_name=Column(String)
+    company_name=Column(String)
+    phone_number=Column(String)
+    email=Column(String)
+    vendor_id=Column(Integer,ForeignKey('vendors.id'))

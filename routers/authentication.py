@@ -61,10 +61,10 @@ async def get_current_vendor(token:Annotated[str, Depends(oauth2_bearer)]):
     try:
         payload=jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
         username=payload.get("sub")
-        user_id=payload.get("id")
-        if username is None or user_id is None:
+        vendor_id=payload.get("id")
+        if username is None or vendor_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Username or ID is invalid")
-        return {"username":username,"user_id":user_id}
+        return {"username":username,"id":vendor_id}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Token is invalid")
 
