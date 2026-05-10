@@ -14,4 +14,4 @@ app.include_router(auth_router)
 
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/auth/register",status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/auth/login",status_code=status.HTTP_302_FOUND)

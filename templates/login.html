@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/login.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="login-section">
+            <div class="form-container">
+                <h1>Giriş Yap</h1>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">Kullanıcı Adı</label>
+                        <input type="text" id="username" name="username" placeholder="Kullanıcı adınızı girin" required>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-row">
+                            <label for="password">Şifre</label>
+                            <a href="#" class="forgot-password">Şifremi Unuttum</a>
+                        </div>
+                        <input type="password" id="password" name="password" placeholder="Şifre" required>
+                    </div>
+
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Beni Hatırla</label>
+                    </div>
+
+                    <button type="submit" class="login-btn">Login</button>
+                </form>
+
+                <p class="signup-text">
+                    Hesabın yok mu? <a href="/auth/register">Hesap Oluştur!</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="image-section">
+            <div class="overlay-image">
+                <img src="{{ url_for('static', path='/img/open.png') }}" alt="Welcome Open">
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', path='/login.js') }}"></script>
+</body>
+</html>

@@ -48,7 +48,7 @@ body {
 .input-group input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #fbc02d; /* Sarımsı çerçeve */
+    border: 1px solid #fbc02d;
     border-radius: 10px;
     outline: none;
 }
@@ -64,7 +64,7 @@ body {
 .signup-btn {
     width: 100%;
     padding: 12px;
-    background-color: #fbc02d; /* Görseldeki sarı buton */
+    background-color: #fbc02d;
     border: none;
     border-radius: 10px;
     color: white;
@@ -88,4 +88,20 @@ body {
     height: 500px;
     object-fit: cover;
     border-radius: 30px;
+}
+.login-redirect {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.login-redirect a {
+    color: #0000ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-redirect a:hover {
+    text-decoration: underline;
 }

@@ -9,3 +9,8 @@ python-jose
 python-dotenv
 jinja2
 aiofiles
+google-generativeai
+langchain-google-genai
+markdown
+bs4
+langchain

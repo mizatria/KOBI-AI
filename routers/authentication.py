@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException,Response
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
@@ -7,7 +7,6 @@ from models import Vendor
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from jose import jwt, JWTError
-from starlette.responses import RedirectResponse
 from datetime import datetime,timedelta,timezone
 from typing import Annotated
 import os
@@ -74,6 +73,12 @@ async def render_register_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="register.html",
+        context={"request": request})
+@router.get("/login")
+async def render_login_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="login.html",
         context={"request": request})
 
 @router.post("/login", response_model=Token)
