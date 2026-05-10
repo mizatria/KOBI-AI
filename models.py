@@ -46,7 +46,7 @@ class Customer(Base):
 
 class Order(Base):
     __tablename__='orders'
-    id=Column(Integer, Sequence('order_id_seq', start=1000), primary_key=True)
+    id=Column(Integer, Sequence('order_id_seq', start=1001), primary_key=True)
     customer_id=Column(Integer,ForeignKey('customers.id'))
     vendor_id=Column(Integer,ForeignKey('vendors.id'))
     status=Column(String,default="Sipariş Alındı")

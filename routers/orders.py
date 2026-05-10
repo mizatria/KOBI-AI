@@ -1,10 +1,16 @@
+import os
+import urllib.parse
+
+from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, Path
+from langchain_core.messages import HumanMessage
+from langchain_groq import ChatGroq
 from sqlalchemy.orm import Session
 from starlette import status
 from typing import Annotated
 from pydantic import BaseModel
 from database import SessionLocal
-from models import Customer, Order, Product, Vendor
+from models import Customer, Order, Product, Vendor, Supplier
 from routers.authentication import get_current_vendor
 from enum import Enum
 
@@ -29,21 +35,38 @@ class CreateOrderRequest(BaseModel):
     phone_number: str
     product_id: int
     quantity: float
-    vendor_id: int
 
 class OrderStatus(str, Enum):
     received   = "Sipariş Alındı"
     preparing  = "Hazırlanıyor"
     shipped    = "Kargoya Verildi"
+    delivered = "Tamamlandı"
 
 class OrderStatusUpdate(BaseModel):
     status: OrderStatus
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_order(db: db_dependency, order_request: CreateOrderRequest):
-    customer = db.query(Customer).filter(
-        Customer.phone_number == order_request.phone_number
-    ).first()
+async def generate_whatsapp_message(product_name:str,current_stock:float,unit:str,supplier_name:str)->str:
+    load_dotenv()
+    llm=ChatGroq(model="llama-3.3-70b-versatile",
+                 api_key=os.getenv("GROQ_API_KEY"))
+    prompt=(
+        f"Sen bir KOBİ sahibisin ve tedarikçine stok yenileme mesajı yazacaksın."
+        f"Kısa, samimi ve profesyonel bir Whatsapp mesajı yaz."
+        f"Türkçe yaz.\n\n"
+        f"Ürün: {product_name}\n"
+        f"Mevcut Stok: {current_stock} {unit}\n"
+        f"Tedarikçi: {supplier_name}\n"
+        f"Sadece mesajı yaz, başka bir şey ekleme."
+    )
+    response=llm.invoke([HumanMessage(content=prompt)])
+    return response.content
+
+@router.post("/manual", status_code=status.HTTP_201_CREATED)
+async def create_manual_order(vendor: vendor_dependency, db: db_dependency, order_request: CreateOrderRequest):
+    if vendor is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    vendor_id = vendor.get('id')
+    customer = db.query(Customer).filter(Customer.phone_number == order_request.phone_number).first()
     if customer is None:
         customer = Customer(
             first_name=order_request.first_name,
@@ -59,15 +82,62 @@ async def create_order(db: db_dependency, order_request: CreateOrderRequest):
         raise HTTPException(status_code=400, detail="Yetersiz stok")
     order = Order(
         customer_id=customer.id,
-        vendor_id=order_request.vendor_id,
+        vendor_id=vendor_id,
         product_id=order_request.product_id,
         quantity=order_request.quantity,
         price=product.price * order_request.quantity,
-        status="pending"
+        status="Sipariş Alındı"
     )
     db.add(order)
     product.stock -= order_request.quantity
     db.commit()
+    if product.stock <= product.min_stock_limit:
+        supplier = db.query(Supplier).filter(Supplier.id == product.supplier_id).first()
+        if supplier:
+            supplier_name = f"{supplier.first_name} {supplier.last_name}"
+            ai_message = await generate_whatsapp_message(product.name, product.stock, product.unit, supplier_name)
+            phone = supplier.phone_number.replace(" ", "").replace("+", "")
+            wa_link = f"https://wa.me/{phone}?text={urllib.parse.quote(ai_message)}"
+            return {"message": "Sipariş oluşturuldu", "order_id": order.id, "stock_alert": {"warning": f"{product.name} stoğu kritik seviyede!", "current_stock": product.stock, "ai_message": ai_message, "wa_link": wa_link}}
+    return {"message": "Sipariş oluşturuldu", "order_id": order.id}
+
+
+@router.post("/store", status_code=status.HTTP_201_CREATED)
+async def create_store_order(db: db_dependency, order_request: CreateOrderRequest):
+    product = db.query(Product).filter(Product.id == order_request.product_id).first()
+    if product is None:
+        raise HTTPException(status_code=404, detail="Ürün bulunamadı")
+    vendor_id = product.vendor_id
+    if product.stock < order_request.quantity:
+        raise HTTPException(status_code=400, detail="Yetersiz stok")
+    customer = db.query(Customer).filter(Customer.phone_number == order_request.phone_number).first()
+    if customer is None:
+        customer = Customer(
+            first_name=order_request.first_name,
+            last_name=order_request.last_name,
+            phone_number=order_request.phone_number
+        )
+        db.add(customer)
+        db.flush()
+    order = Order(
+        customer_id=customer.id,
+        vendor_id=vendor_id,
+        product_id=order_request.product_id,
+        quantity=order_request.quantity,
+        price=product.price * order_request.quantity,
+        status="Sipariş Alındı"
+    )
+    db.add(order)
+    product.stock -= order_request.quantity
+    db.commit()
+    if product.stock <= product.min_stock_limit:
+        supplier = db.query(Supplier).filter(Supplier.id == product.supplier_id).first()
+        if supplier:
+            supplier_name = f"{supplier.first_name} {supplier.last_name}"
+            ai_message = await generate_whatsapp_message(product.name, product.stock, product.unit, supplier_name)
+            phone = supplier.phone_number.replace(" ", "").replace("+", "")
+            wa_link = f"https://wa.me/{phone}?text={urllib.parse.quote(ai_message)}"
+            return {"message": "Sipariş oluşturuldu", "order_id": order.id, "stock_alert": {"warning": f"{product.name} stoğu kritik seviyede!", "current_stock": product.stock, "ai_message": ai_message, "wa_link": wa_link}}
     return {"message": "Sipariş oluşturuldu", "order_id": order.id}
 
 @router.get("/",status_code=status.HTTP_200_OK)
