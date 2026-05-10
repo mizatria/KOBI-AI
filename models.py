@@ -24,7 +24,7 @@ class Product(Base):
     min_stock_limit=Column(Float)
     unit=Column(String)
     category=Column(String)
-    supplier_id=Column(Integer,ForeignKey('suppliers.id'))
+    supplier_id=Column(Integer,ForeignKey('suppliers.id'),nullable=True)
 
 class Supplier(Base):
     __tablename__='suppliers'

@@ -26,7 +26,7 @@ class CreateProductRequest(BaseModel):
     category:str
     stock:float
     min_stock_limit:float
-    supplier_id:int
+    supplier_id:int | None=None
 
 def get_db():
     db=SessionLocal()
@@ -36,6 +36,18 @@ def get_db():
         db.close()
 db_dependency=Annotated[Session,Depends(get_db)]
 vendor_dependency=Annotated[dict,Depends(get_current_vendor)]
+
+@router.get("/store", status_code=status.HTTP_200_OK)
+async def list_store_products(db: db_dependency, category: str = None):
+    query = db.query(Product)
+    if category:
+        query = query.filter(Product.category == category)
+    return query.all()
+
+@router.get("/store/categories", status_code=status.HTTP_200_OK)
+async def list_categories(db: db_dependency):
+    categories = db.query(Product.category).distinct().all()
+    return [c[0] for c in categories if c[0]]
 
 @router.get("/",status_code=status.HTTP_200_OK)
 async def list_products(vendor:vendor_dependency,db:db_dependency):
