@@ -55,4 +55,12 @@ class Order(Base):
     quantity=Column(Float)
     price=Column(Float)
 
-
+class Task(Base):
+    __tablename__='tasks'
+    id=Column(Integer,primary_key=True)
+    title=Column(String)
+    description=Column(String, nullable=True)
+    status=Column(String, default="Bekliyor") # Bekliyor, Yapılıyor, Tamamlandı
+    task_type=Column(String, default="Genel") # Genel, Paketleme, Tedarikçi
+    vendor_id=Column(Integer,ForeignKey('vendors.id'))
+    created_at=Column(DateTime, default=datetime.utcnow)
