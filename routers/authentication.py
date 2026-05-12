@@ -13,6 +13,8 @@ import os
 from dotenv import load_dotenv
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
+from fastapi import Response
+from fastapi.responses import RedirectResponse
 
 
 router=APIRouter(
@@ -57,16 +59,20 @@ def create_access_token(username:str,user_id:str,expires_delta:timedelta):
     payload.update({"exp":expires})
     return jwt.encode(payload,SECRET_KEY,algorithm=ALGORITHM)
 
-async def get_current_vendor(token:Annotated[str, Depends(oauth2_bearer)]):
+
+async def get_current_vendor(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        return None
     try:
-        payload=jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
-        username=payload.get("sub")
-        vendor_id=payload.get("id")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        vendor_id: str = payload.get("id")
         if username is None or vendor_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Username or ID is invalid")
-        return {"username":username,"id":vendor_id}
+            return None
+        return {"username": username, "id": vendor_id}
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Token is invalid")
+        return None
 
 @router.get("/register")
 async def render_register_page(request: Request):
@@ -81,25 +87,32 @@ async def render_login_page(request: Request):
         name="login.html",
         context={"request": request})
 
-@router.post("/login", response_model=Token)
+@router.get("/logout")
+async def logout():
+    response = RedirectResponse(url="/auth/login", status_code=status.HTTP_302_FOUND)
+    response.delete_cookie("access_token")
+    return response
+
+
+@router.post("/login")
 async def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         db: db_dependency):
     vendor = db.query(Vendor).filter(Vendor.username == form_data.username).first()
     if not vendor or not bcrypt_context.verify(form_data.password, vendor.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Username or Password is incorrect.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        vendor.username,
-        str(vendor.id),
-        token_expires
-    )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Hatalı giriş")
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(vendor.username, str(vendor.id), token_expires)
+    response = RedirectResponse(url="/dashboard/", status_code=status.HTTP_302_FOUND)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        samesite="lax"
+    )
+    return response
 
 @router.post("/register",status_code=status.HTTP_201_CREATED)
 async def create_vendor(create_vendor:CreateVendorRequest,db:db_dependency):

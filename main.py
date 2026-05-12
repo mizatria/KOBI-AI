@@ -11,6 +11,8 @@ from routers.suppliers import router as supplier_router
 from routers.customers import router as customer_router
 from routers.orders import router as orders_router
 from routers.tasks import router as tasks_router
+from routers.dashboard import router as dashboard_router
+from routers.whatsapp import router as whatsapp_router
 
 app=FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -23,7 +25,16 @@ app.include_router(supplier_router)
 app.include_router(customer_router)
 app.include_router(orders_router)
 app.include_router(tasks_router)
+app.include_router(dashboard_router)
+app.include_router(whatsapp_router)
 
+@app.get("/store")
+async def render_store_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="store.html",
+        context={"request": request}
+    )
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/auth/login",status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/store", status_code=status.HTTP_302_FOUND)

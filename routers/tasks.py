@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.responses import RedirectResponse
+
 from database import SessionLocal
 from models import Task
 from routers.authentication import get_current_vendor
@@ -45,13 +47,13 @@ async def render_tasks_page(request: Request):
 @router.get("/api/", status_code=status.HTTP_200_OK)
 async def list_tasks(vendor: vendor_dependency, db: db_dependency):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     return db.query(Task).filter(Task.vendor_id == vendor.get('id')).all()
 
 @router.post("/api/", status_code=status.HTTP_201_CREATED)
 async def create_task(vendor: vendor_dependency, db: db_dependency, task_request: TaskRequest):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     task = Task(**task_request.dict(), vendor_id=vendor.get('id'))
     db.add(task)
     db.commit()
@@ -61,7 +63,7 @@ async def create_task(vendor: vendor_dependency, db: db_dependency, task_request
 @router.put("/api/{task_id}", status_code=status.HTTP_200_OK)
 async def update_task(vendor: vendor_dependency, db: db_dependency, task_request: TaskRequest, task_id: int = Path(gt=0)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     task = db.query(Task).filter(Task.id == task_id).filter(Task.vendor_id == vendor.get('id')).first()
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
@@ -78,7 +80,7 @@ async def update_task(vendor: vendor_dependency, db: db_dependency, task_request
 @router.put("/api/{task_id}/status", status_code=status.HTTP_200_OK)
 async def update_task_status(vendor: vendor_dependency, db: db_dependency, status_update: TaskStatusUpdate, task_id: int = Path(gt=0)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     task = db.query(Task).filter(Task.id == task_id).filter(Task.vendor_id == vendor.get('id')).first()
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
@@ -91,7 +93,7 @@ async def update_task_status(vendor: vendor_dependency, db: db_dependency, statu
 @router.delete("/api/{task_id}", status_code=status.HTTP_200_OK)
 async def delete_task(vendor: vendor_dependency, db: db_dependency, task_id: int = Path(gt=0)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     task = db.query(Task).filter(Task.id == task_id).filter(Task.vendor_id == vendor.get('id')).first()
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")

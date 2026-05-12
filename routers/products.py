@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.responses import RedirectResponse
+
 from database import SessionLocal
 from models import Product
 from routers.authentication import get_current_vendor
@@ -52,13 +54,13 @@ async def list_categories(db: db_dependency):
 @router.get("/",status_code=status.HTTP_200_OK)
 async def list_products(vendor:vendor_dependency,db:db_dependency):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     return db.query(Product).filter(Product.vendor_id == vendor.get('id')).all()
 
 @router.post("/",status_code=status.HTTP_201_CREATED)
 async def create_product(vendor:vendor_dependency,db:db_dependency,create_product_request:CreateProductRequest):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     product=Product(**create_product_request.dict(),vendor_id=vendor.get('id'))
     product.description = await create_description_with_gemini(
         product.name,
@@ -70,7 +72,7 @@ async def create_product(vendor:vendor_dependency,db:db_dependency,create_produc
 @router.delete("/{product_id}",status_code=status.HTTP_200_OK)
 async def delete_product(vendor:vendor_dependency,db:db_dependency,product_id:int=Path(gt=0)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     product=db.query(Product).filter(Product.id == product_id).filter(Product.vendor_id == vendor.get('id')).first()
     if product is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
@@ -80,7 +82,7 @@ async def delete_product(vendor:vendor_dependency,db:db_dependency,product_id:in
 @router.put("/{product_id}",status_code=status.HTTP_200_OK)
 async def update_product(vendor:vendor_dependency,db:db_dependency, product_request:CreateProductRequest, product_id:int=Path(gt=0)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     product=db.query(Product).filter(Product.id == product_id).filter(Product.vendor_id==vendor.get('id')).first()
     if product is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")

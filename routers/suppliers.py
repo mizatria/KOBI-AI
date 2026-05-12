@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.responses import RedirectResponse
+
 from routers.authentication import get_current_vendor
 from database import SessionLocal
 from models import Supplier, Vendor
@@ -31,13 +33,13 @@ vendor_dependency=Annotated[dict,Depends(get_current_vendor)]
 @router.get("/",status_code=status.HTTP_200_OK)
 async def list_suppliers(vendor:vendor_dependency,db:db_dependency):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     return db.query(Supplier).filter(Supplier.vendor_id == vendor.get('id')).all()
 
 @router.post("/",status_code=status.HTTP_201_CREATED)
 async def create_supplier(vendor:vendor_dependency,db:db_dependency,create_supplier_request:CreateSupplierRequest ):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     supplier=Supplier(**create_supplier_request.dict(),vendor_id=vendor.get('id'))
     db.add(supplier)
     db.commit()
@@ -45,7 +47,7 @@ async def create_supplier(vendor:vendor_dependency,db:db_dependency,create_suppl
 @router.delete("/{supplier_id}",status_code=status.HTTP_200_OK)
 async def delete_supplier(vendor:vendor_dependency,db:db_dependency,supplier_id:int=Path(gt=0)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     supplier=db.query(Supplier).filter(Supplier.id == supplier_id).filter(Supplier.vendor_id==vendor.get('id')).first()
     if supplier is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Supplier not found")
@@ -55,7 +57,7 @@ async def delete_supplier(vendor:vendor_dependency,db:db_dependency,supplier_id:
 @router.put("/{supplier_id}",status_code=status.HTTP_200_OK)
 async def update_supplier(vendor:vendor_dependency,db:db_dependency, create_supplier_request:CreateSupplierRequest, supplier_id:int=Path(gt=0)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vendor not provided")
+        return RedirectResponse(url="/auth/login", status_code=302)
     supplier=db.query(Supplier).filter(Supplier.id == supplier_id).filter(Supplier.vendor_id==vendor.get('id')).first()
     if supplier is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Supplier not found")

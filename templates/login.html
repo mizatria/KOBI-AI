@@ -12,9 +12,12 @@
         <div class="login-section">
             <div class="form-container">
                 <h1>Giriş Yap</h1>
-                <form id="loginForm">
+
+                <!-- JS'i kaldırdık, action ve method ekledik -->
+                <form action="/auth/login" method="POST">
                     <div class="input-group">
                         <label for="username">Kullanıcı Adı</label>
+                        <!-- 'name' özelliği backend'deki form_data için kritiktir -->
                         <input type="text" id="username" name="username" placeholder="Kullanıcı adınızı girin" required>
                     </div>
 
@@ -31,7 +34,8 @@
                         <label for="remember">Beni Hatırla</label>
                     </div>
 
-                    <button type="submit" class="login-btn">Login</button>
+                    <!-- Type 'submit' olduğu için formu direkt post eder -->
+                    <button type="submit" class="login-btn">Giriş Yap</button>
                 </form>
 
                 <p class="signup-text">
@@ -46,6 +50,7 @@
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', path='/js/login.js') }}"></script>
+
+    <!-- JS dosyasını sildik çünkü RedirectResponse'u tarayıcı kendisi halletmeli -->
 </body>
 </html>

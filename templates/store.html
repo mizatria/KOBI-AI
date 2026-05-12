@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Esnaf — Online Mağaza</title>
+  <link rel="stylesheet" href="/static/css/store.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">Esnaf<strong>Market</strong></span>
+      </div>
+      <nav class="header-nav">
+        <a href="/auth/login" class="nav-btn nav-btn-outline">Satıcı Girişi</a>
+        <a href="/auth/register" class="nav-btn nav-btn-fill">Satıcı Ol</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Yerel üreticiden</p>
+      <h1 class="hero-title">Taze &amp; Kaliteli<br/><em>Ürünler</em></h1>
+      <p class="hero-sub">Kolayca sipariş verin, kapınıza gelsin.</p>
+    </div>
+    <div class="hero-deco"></div>
+  </section>
+
+  <!-- HERO STRIPE -->
+  <div class="hero-stripe">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <section class="filter-bar">
+    <div class="filter-inner">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Ürün ara..." />
+      </div>
+      <div class="categories" id="category-list">
+        <button class="cat-btn active" data-cat="all">Tümü</button>
+        <!-- Kategoriler JS ile yüklenecek -->
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT GRID -->
+  <main class="main">
+    <div class="products-grid" id="products-grid">
+      <!-- Ürünler JS ile yüklenecek -->
+    </div>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <div class="empty-icon">📦</div>
+      <p>Bu kategoride ürün bulunamadı.</p>
+    </div>
+  </main>
+
+  <!-- ORDER MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="order-modal">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-product-info" id="modal-product-info">
+        <!-- Ürün bilgisi -->
+      </div>
+      <form class="order-form" id="order-form" onsubmit="return false;">
+        <h2 class="modal-title">Sipariş Ver</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ad</label>
+            <input type="text" id="first_name" placeholder="Adınız" required />
+          </div>
+          <div class="form-group">
+            <label>Soyad</label>
+            <input type="text" id="last_name" placeholder="Soyadınız" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Telefon Numarası</label>
+          <input type="tel" id="phone_number" placeholder="05XX XXX XX XX" required />
+        </div>
+        <div class="form-group">
+          <label>Miktar <span id="unit-label" class="unit-badge"></span></label>
+          <input type="number" id="quantity" placeholder="1" min="0.1" step="0.1" value="1" required />
+        </div>
+        <div class="price-preview" id="price-preview">
+          <span>Toplam:</span>
+          <strong id="total-price">₺0.00</strong>
+        </div>
+        <button type="button" class="btn-submit" id="submit-btn">
+          <span id="btn-text">Sipariş Ver</span>
+          <span id="btn-loader" style="display:none;">⏳</span>
+        </button>
+        <div class="form-feedback" id="form-feedback"></div>
+
+        <!-- Stok uyarısı / WhatsApp -->
+        <div class="stock-alert" id="stock-alert" style="display:none;">
+          <p class="stock-warning" id="stock-warning-text"></p>
+          <a href="#" id="wa-link" class="wa-btn" target="_blank">
+            📲 Tedarikçiye WhatsApp ile Bildir
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/js/store.js"></script>
+</body>
+</html>

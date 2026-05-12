@@ -1,6 +1,5 @@
 import os
 import urllib.parse
-
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, Path
 from langchain_core.messages import HumanMessage
@@ -9,6 +8,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 from typing import Annotated
 from pydantic import BaseModel
+from starlette.responses import RedirectResponse
+
 from database import SessionLocal
 from models import Customer, Order, Product, Vendor, Supplier
 from routers.authentication import get_current_vendor
@@ -64,7 +65,7 @@ async def generate_whatsapp_message(product_name:str,current_stock:float,unit:st
 @router.post("/manual", status_code=status.HTTP_201_CREATED)
 async def create_manual_order(vendor: vendor_dependency, db: db_dependency, order_request: CreateOrderRequest):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        return RedirectResponse(url="/auth/login", status_code=302)
     vendor_id = vendor.get('id')
     customer = db.query(Customer).filter(Customer.phone_number == order_request.phone_number).first()
     if customer is None:
@@ -143,13 +144,13 @@ async def create_store_order(db: db_dependency, order_request: CreateOrderReques
 @router.get("/",status_code=status.HTTP_200_OK)
 async def list_orders(vendor:vendor_dependency,db: db_dependency):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        return RedirectResponse(url="/auth/login", status_code=302)
     return db.query(Order).filter(Order.vendor_id == vendor.get('id')).all()
 
 @router.get("/{order_id}",status_code=status.HTTP_200_OK)
 async def get_detailed_order(vendor:vendor_dependency,db: db_dependency, order_id: int=Path(gt=1000)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        return RedirectResponse(url="/auth/login", status_code=302)
     order= db.query(Order).filter(Order.id == order_id).filter(Order.vendor_id==vendor.get('id')).first()
     if order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -158,7 +159,7 @@ async def get_detailed_order(vendor:vendor_dependency,db: db_dependency, order_i
 @router.put("/{order_id}",status_code=status.HTTP_200_OK)
 async def update_order_status(vendor:vendor_dependency,db: db_dependency,status_update: OrderStatusUpdate, order_id: int=Path(gt=1000)):
     if vendor is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        return RedirectResponse(url="/auth/login", status_code=302)
     order = db.query(Order).filter(Order.id == order_id).filter(Order.vendor_id == vendor.get('id')).first()
     if order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
