@@ -28,3 +28,9 @@ KOPİ; butik işletmelerden tarım kooperatiflerine, el sanatları üreticilerin
 
 ##👨‍💻 Geliştirici Ekip
 Bu proje Sudenaz Kalaycık, Nehir Doğan ve Zuhal Tuana Yıldırım tarafından geliştirilmiştir.
+
+<img width="1824" height="948" alt="Screenshot 2026-05-13 221736" src="https://github.com/user-attachments/assets/ffcdc219-26ab-4b0f-9614-29bb73e99449" />
+
+<img width="1868" height="954" alt="Screenshot 2026-05-13 221907" src="https://github.com/user-attachments/assets/da6fa315-3fc9-43de-865a-286671a9922f" />
+
+
