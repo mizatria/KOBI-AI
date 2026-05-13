@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tedarikçi Yönetimi | KOBİ-AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-bg:     #2c3a1e;
+            --sidebar-active: #4a6a2a;
+            --accent-green:   #7ab648;
+            --accent-gold:    #c8922a;
+            --page-bg:        #f5f0e8;
+            --card-bg:        #ffffff;
+            --column-bg:      #e8e2d6;
+            --border-color:   #d4ccbc;
+            --text-dark:      #2c3a1e;
+            --text-muted:     #6b6455;
+            --copper: #C8935A;
+            --white: #FFFFFF;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--page-bg); color: var(--text-dark); display: flex; min-height: 100vh; }
+
+        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: #e8edd0; position: fixed; left: 0; top: 0; height: 100vh; padding: 24px; display: flex; flex-direction: column; z-index: 1000; }
+        .sidebar-brand { font-size: 1.5rem; font-weight: 700; margin-bottom: 40px; color: var(--accent-gold); }
+        .sidebar-nav a { display: flex; align-items: center; padding: 12px 16px; color: #e8edd0; text-decoration: none; border-radius: 8px; margin-bottom: 8px; transition: 0.3s; }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background-color: var(--sidebar-active); color: var(--white); }
+
+        .main-content { flex: 1; margin-left: var(--sidebar-width); padding: 40px; width: calc(100% - var(--sidebar-width)); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
+        .btn-new { background-color: var(--accent-green); color: white; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-new:hover { background-color: #5e9632; }
+
+        .table-container { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(44,58,30,0.07); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 16px; color: var(--accent-green); font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid var(--column-bg); }
+        td { padding: 16px; border-bottom: 1px solid var(--column-bg); font-size: 0.95rem; }
+
+        .btn-edit { background-color: var(--accent-gold); color: white; border: none; padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; margin-right: 6px; }
+        .btn-edit:hover { background-color: #a87820; }
+        .btn-delete { background-color: #dc2626; color: white; border: none; padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { background-color: #b91c1c; }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(44,58,30,0.6); backdrop-filter: blur(5px); }
+        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 35px; border-radius: 24px; width: 500px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .close-btn { font-size: 28px; color: var(--accent-green); cursor: pointer; }
+
+        .input-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
+        .input-group label { font-size: 0.8rem; color: var(--accent-green); font-weight: 700; text-transform: uppercase; }
+        .input-group input { width: 100%; padding: 12px; border: 2px solid var(--column-bg); border-radius: 12px; background-color: #fafafa; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        .input-group input:focus { border-color: var(--accent-green); }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .save-btn { width: 100%; color: white; padding: 16px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .save-btn.green { background-color: var(--copper); }
+        .save-btn.green:hover { background-color: #b3824d; }
+        .save-btn.gold { background-color: var(--accent-gold); }
+        .save-btn.gold:hover { background-color: #a87820; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">📦 ESNAF</div>
+        <nav class="sidebar-nav">
+            <a href="/dashboard/">📊 <span>Dashboard</span></a>
+            <a href="/orders/">📦 <span>Siparişler</span></a>
+            <a href="/customers/">👥 <span>Müşteriler</span></a>
+            <hr style="border: 0.5px solid #4a6a2a; margin: 20px 0;">
+            <a href="/products/">🍎 <span>Ürünler</span></a>
+            <a href="/suppliers/" class="active">🚚 <span>Tedarikçiler</span></a>
+            <a href="/tasks/">✅ <span>Görevler</span></a>
+        </nav>
+        <div style="margin-top: auto;">
+            <button onclick="logout()" style="width:100%; background: transparent; border: 1px solid var(--accent-green); color: #e8edd0; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">🚪 Çıkış Yap</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1 style="margin:0;">Tedarikçi Yönetimi</h1>
+                <p style="color:var(--text-muted);margin:5px 0 0 0;">Malzeme ve ürün tedarik ettiğiniz iş ortaklarınızı yönetin.</p>
+            </div>
+            <button class="btn-new" onclick="openAddModal()">+ Yeni Tedarikçi Ekle</button>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Şirket Adı</th>
+                        <th>Yetkili Kişi</th>
+                        <th>E-posta</th>
+                        <th>Telefon</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                    <tr>
+                        <td>#{{ supplier.id }}</td>
+                        <td style="font-weight:600;">{{ supplier.company_name }}</td>
+                        <td>{{ supplier.first_name }} {{ supplier.last_name }}</td>
+                        <td>{{ supplier.email }}</td>
+                        <td>{{ supplier.phone_number }}</td>
+                        <td>
+                            <button class="btn-edit"
+                                data-id="{{ supplier.id }}"
+                                data-company="{{ supplier.company_name | e }}"
+                                data-first="{{ supplier.first_name | e }}"
+                                data-last="{{ supplier.last_name | e }}"
+                                data-email="{{ supplier.email | e }}"
+                                data-phone="{{ supplier.phone_number | e }}"
+                                onclick="openEditModal(this)">&#9998; Güncelle</button>
+                            <button class="btn-delete"
+                                data-id="{{ supplier.id }}"
+                                onclick="deleteRecord(this)">&#128465; Sil</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not suppliers %}
+                    <tr><td colspan="6" style="text-align:center;padding:50px;color:var(--text-muted);">Henüz kayıtlı tedarikçi bulunmuyor.</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yeni Tedarikçi Kaydı</h2>
+                <span class="close-btn" onclick="closeModal('addModal')">&times;</span>
+            </div>
+            <form id="addForm">
+                <div class="input-group">
+                    <label>Şirket Adı</label>
+                    <input type="text" id="add_company_name" required>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Yetkili Adı</label>
+                        <input type="text" id="add_first_name" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Yetkili Soyadı</label>
+                        <input type="text" id="add_last_name" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>E-posta</label>
+                    <input type="email" id="add_email" required>
+                </div>
+                <div class="input-group">
+                    <label>Telefon</label>
+                    <input type="text" id="add_phone" placeholder="05xxxxxxxxx" required>
+                </div>
+                <button type="submit" class="save-btn green">Tedarikçiyi Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tedarikçiyi Güncelle</h2>
+                <span class="close-btn" onclick="closeModal('editModal')">&times;</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="edit_id">
+                <div class="input-group">
+                    <label>Şirket Adı</label>
+                    <input type="text" id="edit_company_name" required>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Yetkili Adı</label>
+                        <input type="text" id="edit_first_name" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Yetkili Soyadı</label>
+                        <input type="text" id="edit_last_name" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>E-posta</label>
+                    <input type="email" id="edit_email" required>
+                </div>
+                <div class="input-group">
+                    <label>Telefon</label>
+                    <input type="text" id="edit_phone" required>
+                </div>
+                <button type="submit" class="save-btn gold">Değişiklikleri Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddModal() { document.getElementById('addModal').style.display='block'; }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+        function logout() { window.location.href='/auth/logout'; }
+
+        function openEditModal(btn) {
+            const d = btn.dataset;
+            document.getElementById('edit_id').value = d.id;
+            document.getElementById('edit_company_name').value = d.company;
+            document.getElementById('edit_first_name').value = d.first;
+            document.getElementById('edit_last_name').value = d.last;
+            document.getElementById('edit_email').value = d.email;
+            document.getElementById('edit_phone').value = d.phone;
+            document.getElementById('editModal').style.display='block';
+        }
+
+        function deleteRecord(btn) {
+            const id = btn.dataset.id;
+            if (!confirm('Bu tedarikçiyi silmek istediğinize emin misiniz?')) return;
+            fetch(`/suppliers/${id}`, { method: 'DELETE' })
+                .then(r => { if(r.ok){alert('Tedarikçi silindi.');location.reload();}else{alert('Silme sırasında hata oluştu.');} });
+        }
+
+        window.onclick = function(e) {
+            ['addModal','editModal'].forEach(id => { if(e.target==document.getElementById(id)) closeModal(id); });
+        }
+
+        document.getElementById('addForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const data = {
+                company_name: document.getElementById('add_company_name').value,
+                first_name:   document.getElementById('add_first_name').value,
+                last_name:    document.getElementById('add_last_name').value,
+                email:        document.getElementById('add_email').value,
+                phone_number: document.getElementById('add_phone').value
+            };
+            const res = await fetch('/suppliers/', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            if(res.ok){alert('Tedarikçi başarıyla eklendi!');location.reload();}
+            else{alert('Bir hata oluştu. Lütfen bilgileri kontrol edin.');}
+        };
+
+        document.getElementById('editForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit_id').value;
+            const data = {
+                company_name: document.getElementById('edit_company_name').value,
+                first_name:   document.getElementById('edit_first_name').value,
+                last_name:    document.getElementById('edit_last_name').value,
+                email:        document.getElementById('edit_email').value,
+                phone_number: document.getElementById('edit_phone').value
+            };
+            const res = await fetch(`/suppliers/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            if(res.ok){alert('Tedarikçi güncellendi!');location.reload();}
+            else{alert('Güncelleme sırasında hata oluştu.');}
+        };
+    </script>
+</body>
+</html>

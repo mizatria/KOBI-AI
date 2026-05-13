@@ -9,7 +9,6 @@
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="header">
     <div class="header-inner">
       <div class="logo">
@@ -23,7 +22,6 @@
     </div>
   </header>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-inner">
       <p class="hero-eyebrow">Yerel üreticiden</p>
@@ -33,7 +31,6 @@
     <div class="hero-deco"></div>
   </section>
 
-  <!-- HERO STRIPE -->
   <div class="hero-stripe">
     <span></span><span></span><span></span><span></span><span></span>
   </div>
@@ -46,15 +43,12 @@
       </div>
       <div class="categories" id="category-list">
         <button class="cat-btn active" data-cat="all">Tümü</button>
-        <!-- Kategoriler JS ile yüklenecek -->
       </div>
     </div>
   </section>
 
-  <!-- PRODUCT GRID -->
   <main class="main">
     <div class="products-grid" id="products-grid">
-      <!-- Ürünler JS ile yüklenecek -->
     </div>
     <div class="empty-state" id="empty-state" style="display:none;">
       <div class="empty-icon">📦</div>
@@ -62,12 +56,10 @@
     </div>
   </main>
 
-  <!-- ORDER MODAL -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal" id="order-modal">
       <button class="modal-close" id="modal-close">✕</button>
       <div class="modal-product-info" id="modal-product-info">
-        <!-- Ürün bilgisi -->
       </div>
       <form class="order-form" id="order-form" onsubmit="return false;">
         <h2 class="modal-title">Sipariş Ver</h2>
@@ -99,7 +91,6 @@
         </button>
         <div class="form-feedback" id="form-feedback"></div>
 
-        <!-- Stok uyarısı / WhatsApp -->
         <div class="stock-alert" id="stock-alert" style="display:none;">
           <p class="stock-warning" id="stock-warning-text"></p>
           <a href="#" id="wa-link" class="wa-btn" target="_blank">

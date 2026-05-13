@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from routers.authentication import get_current_vendor
+from routers.authentication import get_current_vendor, templates
 from database import SessionLocal
 from models import Supplier, Vendor
 
@@ -30,11 +31,22 @@ def get_db():
 db_dependency=Annotated[Session,Depends(get_db)]
 vendor_dependency=Annotated[dict,Depends(get_current_vendor)]
 
-@router.get("/",status_code=status.HTTP_200_OK)
-async def list_suppliers(vendor:vendor_dependency,db:db_dependency):
+
+@router.get("/")
+async def list_suppliers_page(request: Request, vendor: vendor_dependency, db: db_dependency):
     if vendor is None:
         return RedirectResponse(url="/auth/login", status_code=302)
-    return db.query(Supplier).filter(Supplier.vendor_id == vendor.get('id')).all()
+
+    suppliers = db.query(Supplier).filter(Supplier.vendor_id == vendor.get('id')).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="suppliers.html",
+        context={
+            "suppliers": suppliers,
+            "vendor": vendor
+        }
+    )
 
 @router.post("/",status_code=status.HTTP_201_CREATED)
 async def create_supplier(vendor:vendor_dependency,db:db_dependency,create_supplier_request:CreateSupplierRequest ):

@@ -13,7 +13,6 @@ import os
 from dotenv import load_dotenv
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
-from fastapi import Response
 from fastapi.responses import RedirectResponse
 
 
@@ -80,6 +79,7 @@ async def render_register_page(request: Request):
         request=request,
         name="register.html",
         context={"request": request})
+
 @router.get("/login")
 async def render_login_page(request: Request):
     return templates.TemplateResponse(
@@ -89,7 +89,7 @@ async def render_login_page(request: Request):
 
 @router.get("/logout")
 async def logout():
-    response = RedirectResponse(url="/auth/login", status_code=status.HTTP_302_FOUND)
+    response = RedirectResponse(url="/store", status_code=status.HTTP_302_FOUND)
     response.delete_cookie("access_token")
     return response
 

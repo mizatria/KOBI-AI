@@ -6,8 +6,18 @@
     <title>KOBİ-AI | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ── Renk Paleti & Değişkenler ─────────────────────────── */
         :root {
+            --sidebar-bg:     #2c3a1e;
+            --sidebar-active: #4a6a2a;
+            --accent-green:   #7ab648;
+            --accent-gold:    #c8922a;
+            --page-bg:        #f5f0e8;
+            --card-bg:        #ffffff;
+            --column-bg:      #e8e2d6;
+            --border-color:   #d4ccbc;
+            --text-dark:      #2c3a1e;
+            --text-muted:     #6b6455;
+
             --olive-green: #6B7C3A;
             --dark-forest: #1E2D0F;
             --cream: #FDF5E6;
@@ -19,21 +29,19 @@
             --sidebar-width: 260px;
         }
 
-        /* ── Genel Yapı ────────────────────────────────────────── */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--cream);
-            color: var(--dark-forest);
+            background-color: var(--page-bg);
+            color: var(--text-dark);
             display: flex;
             min-height: 100vh;
         }
 
-        /* ── Sidebar (Yan Menü) ─────────────────────────────────── */
         .sidebar {
             width: var(--sidebar-width);
-            background-color: var(--dark-forest);
-            color: var(--cream);
+            background-color: var(--sidebar-bg);
+            color: #e8edd0;
             position: fixed;
             height: 100vh;
             padding: 24px;
@@ -46,7 +54,7 @@
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 40px;
-            color: var(--amber);
+            color: var(--accent-gold);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -57,7 +65,7 @@
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--olive-green);
+            color: var(--accent-green);
             margin-bottom: 15px;
             display: block;
         }
@@ -66,7 +74,7 @@
             display: flex;
             align-items: center;
             padding: 12px 16px;
-            color: var(--light-sage);
+            color: #e8edd0;
             text-decoration: none;
             border-radius: 8px;
             margin-bottom: 8px;
@@ -75,13 +83,10 @@
         }
 
         .sidebar-nav a:hover, .sidebar-nav a.active {
-            background-color: var(--olive-green);
+            background-color: var(--sidebar-active);
             color: var(--white);
         }
 
-        .sidebar-nav a i { margin-right: 12px; }
-
-        /* ── Ana İçerik Alanı ───────────────────────────────────── */
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
@@ -97,13 +102,12 @@
         }
 
         .welcome-text h1 { font-size: 1.8rem; font-weight: 700; }
-        .welcome-text p { color: var(--olive-green); font-size: 0.9rem; }
+        .welcome-text p { color: var(--text-muted); font-size: 0.9rem; }
 
-        /* ── AI Özet Kutusu (Şeffaf Pastel) ─────────────────────── */
         .ai-summary {
             background: var(--pastel-green);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--olive-green);
+            border: 1px solid var(--accent-green);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 40px;
@@ -121,7 +125,7 @@
         }
 
         .ai-summary h3 {
-            color: var(--dark-forest);
+            color: var(--text-dark);
             font-size: 0.8rem;
             text-transform: uppercase;
             margin-bottom: 12px;
@@ -130,9 +134,8 @@
             gap: 8px;
         }
 
-        .ai-content { font-size: 1.05rem; line-height: 1.6; color: var(--dark-forest); font-weight: 500; }
+        .ai-content { font-size: 1.05rem; line-height: 1.6; color: var(--text-dark); font-weight: 500; }
 
-        /* ── İstatistik Kartları ────────────────────────────────── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -141,19 +144,18 @@
         }
 
         .stat-card {
-            background: var(--white);
+            background: var(--card-bg);
             padding: 24px;
             border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(30, 45, 15, 0.05);
+            box-shadow: 0 4px 20px rgba(44, 58, 30, 0.07);
             border-bottom: 4px solid transparent;
             transition: transform 0.3s;
         }
 
-        .stat-card:hover { transform: translateY(-5px); border-bottom-color: var(--amber); }
-        .stat-label { font-size: 0.8rem; color: var(--olive-green); font-weight: 600; text-transform: uppercase; }
-        .stat-value { font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: var(--dark-forest); }
+        .stat-card:hover { transform: translateY(-5px); border-bottom-color: var(--accent-gold); }
+        .stat-label { font-size: 0.8rem; color: var(--accent-green); font-weight: 600; text-transform: uppercase; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: var(--text-dark); }
 
-        /* ── CRUD Hızlı Erişim Butonları ───────────────────────── */
         .action-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -162,34 +164,34 @@
         }
 
         .btn-crud {
-            background: var(--white);
-            border: 2px dashed var(--olive-green);
+            background: var(--card-bg);
+            border: 2px dashed var(--accent-green);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
             text-decoration: none;
-            color: var(--dark-forest);
+            color: var(--text-dark);
             font-weight: 600;
             transition: all 0.3s;
         }
 
         .btn-crud:hover {
-            background: var(--light-sage);
+            background: var(--column-bg);
             border-style: solid;
-            color: var(--olive-green);
+            color: var(--accent-green);
         }
 
-        /* ── Tablo ───────────────────────────────────────────────── */
+        /* ── Tablo ── */
         .table-container {
-            background: var(--white);
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(30, 45, 15, 0.05);
+            box-shadow: 0 4px 20px rgba(44, 58, 30, 0.07);
         }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 15px; color: var(--olive-green); font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid var(--cream); }
-        td { padding: 15px; border-bottom: 1px solid var(--cream); font-size: 0.95rem; }
+        th { text-align: left; padding: 15px; color: var(--accent-green); font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid var(--column-bg); }
+        td { padding: 15px; border-bottom: 1px solid var(--column-bg); font-size: 0.95rem; }
         .badge-low { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
 
         @media (max-width: 1024px) {
@@ -205,7 +207,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            🌿 <span>KOBİ-AI</span>
+            📦 <span>ESNAF</span>
         </div>
 
         <div class="nav-group">
@@ -225,6 +227,12 @@
                 <a href="/tasks/">✅ <span>Görev Listesi (Todo)</span></a>
             </nav>
         </div>
+
+        <div style="margin-top: auto;">
+            <button onclick="logout()" style="width:100%; background: transparent; border: 1px solid var(--accent-green); color: #e8edd0; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                🚪 Çıkış Yap
+            </button>
+        </div>
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -235,7 +243,7 @@
                 <h1>Merhaba, {{ user.company_name if user else vendor.company_name }}</h1>
                 <p>İşletmenizin bugünkü durumuna göz atın. | {{ bugun }}</p>
             </div>
-            <div class="user-profile" style="background: var(--light-sage); padding: 10px 20px; border-radius: 50px; font-weight: 600;">
+            <div class="user-profile" style="background: var(--column-bg); padding: 10px 20px; border-radius: 50px; font-weight: 600; color: var(--text-dark);">
                 👤 Satıcı Paneli
             </div>
         </header>
@@ -260,22 +268,22 @@
             <div class="stat-card">
                 <div class="stat-label">Günlük Sipariş</div>
                 <div class="stat-value">{{ bugunun_siparis_sayisi }}</div>
-                <div style="color: var(--copper); font-size: 0.8rem; font-weight: 700;">{{ bugun }}</div>
+                <div style="color: var(--accent-gold); font-size: 0.8rem; font-weight: 700;">{{ bugun }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Toplam Gelir</div>
-                <div class="stat-value" style="color: var(--olive-green);">₺{{ "{:,.2f}".format(bugunun_geliri) }}</div>
-                <div style="color: var(--amber); font-weight: 700;">▲ %{{ gelir_degisim }}</div>
+                <div class="stat-value" style="color: var(--accent-green);">₺{{ "{:,.2f}".format(bugunun_geliri) }}</div>
+                <div style="color: var(--accent-gold); font-weight: 700;">▲ %{{ gelir_degisim }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Tamamlanan</div>
                 <div class="stat-value">{{ tamamlanan_siparis }}</div>
-                <div style="color: var(--olive-green); font-size: 0.8rem;">Sipariş Tamamlandı</div>
+                <div style="color: var(--accent-green); font-size: 0.8rem;">Sipariş Tamamlandı</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Müşteri Portföyü</div>
                 <div class="stat-value">{{ toplam_musteri }}</div>
-                <div style="color: var(--olive-green); font-size: 0.8rem;">Kayıtlı Kişi</div>
+                <div style="color: var(--accent-green); font-size: 0.8rem;">Kayıtlı Kişi</div>
             </div>
         </div>
 
@@ -306,7 +314,7 @@
                         </tr>
                         {% endfor %}
                     {% else %}
-                        <tr><td colspan="5" style="text-align: center; color: var(--olive-green); padding: 30px;">✅ Tüm stoklar güvende.</td></tr>
+                        <tr><td colspan="5" style="text-align: center; color: var(--accent-green); padding: 30px;">✅ Tüm stoklar güvende.</td></tr>
                     {% endif %}
                 </tbody>
             </table>
@@ -315,8 +323,10 @@
     </main>
 
     <script>
-        // İleride etkileşimli grafikler veya dinamik güncellemeler için buraya JS eklenebilir.
         console.log("KOBİ-AI Dashboard Yüklendi.");
+        function logout() {
+            window.location.href = '/auth/logout';
+        }
     </script>
 </body>
 </html>

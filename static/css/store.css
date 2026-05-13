@@ -1,6 +1,4 @@
-/* =====================
-   CSS VARIABLES
-   ===================== */
+
 :root {
   --forest:      #1E2D0F;
   --olive:       #6B7C3A;
@@ -23,9 +21,6 @@
   --transition:  0.25s ease;
 }
 
-/* =====================
-   RESET & BASE
-   ===================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -35,9 +30,6 @@ body {
   min-height: 100vh;
 }
 
-/* =====================
-   HEADER
-   ===================== */
 .header {
   background: var(--forest);
   position: sticky;
@@ -116,9 +108,6 @@ body {
   color: var(--white);
 }
 
-/* =====================
-   HERO — STRIPE DESIGN
-   ===================== */
 .hero {
   position: relative;
   overflow: hidden;
@@ -127,7 +116,7 @@ body {
   align-items: center;
 }
 
-/* Sıcak zemin */
+
 .hero::before {
   content: '';
   position: absolute;
@@ -136,7 +125,6 @@ body {
   z-index: 0;
 }
 
-/* Diagonal kalın şeritler */
 .hero::after {
   content: '';
   position: absolute;
@@ -168,7 +156,6 @@ body {
   z-index: 3;
 }
 
-/* Sağ taraf sıcak amber leke */
 .hero-deco {
   position: absolute;
   right: -100px;
@@ -237,7 +224,6 @@ body {
   max-width: 420px;
 }
 
-/* Amber şerit çizgisi hero altında */
 .hero-stripe {
   position: relative;
   height: 8px;
@@ -256,9 +242,6 @@ body {
 .hero-stripe span:nth-child(4) { background: var(--copper); flex: 1; }
 .hero-stripe span:nth-child(5) { background: var(--sage); flex: 3; }
 
-/* =====================
-   FILTER BAR
-   ===================== */
 .filter-bar {
   background: var(--cream-warm);
   border-bottom: 2px solid var(--gray-200);
@@ -342,9 +325,6 @@ body {
   font-weight: 600;
 }
 
-/* =====================
-   MAIN / GRID
-   ===================== */
 .main {
   max-width: 1240px;
   margin: 0 auto;
@@ -357,9 +337,6 @@ body {
   gap: 24px;
 }
 
-/* =====================
-   PRODUCT CARD
-   ===================== */
 .product-card {
   background: var(--white);
   border-radius: var(--radius);
@@ -384,7 +361,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Kartın üst renkli şerit */
 .product-card::before {
   content: '';
   display: block;
@@ -487,9 +463,6 @@ body {
   transform: scale(1.04);
 }
 
-/* =====================
-   EMPTY STATE
-   ===================== */
 .empty-state {
   text-align: center;
   padding: 80px 20px;
@@ -499,9 +472,6 @@ body {
 .empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
 .empty-state p { font-size: 1.05rem; }
 
-/* =====================
-   SKELETON LOADER
-   ===================== */
 .skeleton-card {
   background: var(--white);
   border-radius: var(--radius);
@@ -532,9 +502,6 @@ body {
 .skel-line.desc2 { height: 14px; width: 80%; }
 .skel-line.price { height: 20px; width: 40%; margin-top: 10px; }
 
-/* =====================
-   MODAL OVERLAY
-   ===================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -573,7 +540,6 @@ body {
   transform: translateY(0) scale(1);
 }
 
-/* Modal üst şerit */
 .modal::before {
   content: '';
   display: block;
@@ -608,9 +574,6 @@ body {
 
 .modal-close:hover { background: var(--gray-200); }
 
-/* =====================
-   MODAL PRODUCT INFO
-   ===================== */
 .modal-product-info {
   background: var(--sage-light);
   border-radius: var(--radius-sm);
@@ -642,9 +605,6 @@ body {
   margin-top: 4px;
 }
 
-/* =====================
-   ORDER FORM
-   ===================== */
 .order-form {
   padding: 0 32px;
 }
@@ -706,9 +666,6 @@ body {
 
 .form-group input::placeholder { color: var(--gray-400); }
 
-/* =====================
-   PRICE PREVIEW
-   ===================== */
 .price-preview {
   display: flex;
   align-items: center;
@@ -730,9 +687,6 @@ body {
   color: var(--amber);
 }
 
-/* =====================
-   SUBMIT BUTTON
-   ===================== */
 .btn-submit {
   width: 100%;
   background: var(--olive);
@@ -752,9 +706,6 @@ body {
 .btn-submit:active  { transform: scale(0.98); }
 .btn-submit:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
 
-/* =====================
-   FEEDBACK
-   ===================== */
 .form-feedback {
   margin-top: 12px;
   font-size: 0.9rem;
@@ -765,9 +716,6 @@ body {
 .form-feedback.success { color: var(--olive); }
 .form-feedback.error   { color: #c0392b; }
 
-/* =====================
-   STOCK ALERT / WHATSAPP
-   ===================== */
 .stock-alert {
   margin-top: 16px;
   background: #fff8e1;
@@ -798,9 +746,6 @@ body {
 
 .wa-btn:hover { filter: brightness(0.9); }
 
-/* =====================
-   RESPONSIVE
-   ===================== */
 @media (max-width: 640px) {
   .hero-inner { padding: 48px 20px 56px; }
   .form-row { grid-template-columns: 1fr; }

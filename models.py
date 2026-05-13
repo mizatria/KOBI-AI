@@ -21,7 +21,7 @@ class Product(Base):
     price=Column(Float)
     stock=Column(Float)
     vendor_id=Column(Integer,ForeignKey('vendors.id'))
-    min_stock_limit=Column(Float)
+    min_stock_limit=Column(Float, default=0.0)
     unit=Column(String)
     category=Column(String)
     supplier_id=Column(Integer,ForeignKey('suppliers.id'),nullable=True)

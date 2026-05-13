@@ -3,11 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
 from database import SessionLocal
 from models import Product
-from routers.authentication import get_current_vendor
+from routers.authentication import get_current_vendor, templates
 from bs4 import BeautifulSoup
 from typing import Annotated
 import os
@@ -39,6 +40,27 @@ def get_db():
 db_dependency=Annotated[Session,Depends(get_db)]
 vendor_dependency=Annotated[dict,Depends(get_current_vendor)]
 
+
+@router.get("/")
+async def list_products_page(request: Request, vendor: vendor_dependency, db: db_dependency):
+    if vendor is None:
+        return RedirectResponse(url="/auth/login", status_code=302)
+
+    products = db.query(Product).filter(Product.vendor_id == vendor.get('id')).all()
+
+    from models import Supplier
+    suppliers = db.query(Supplier).filter(Supplier.vendor_id == vendor.get('id')).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="products.html",
+        context={
+            "products": products,
+            "suppliers": suppliers,
+            "vendor": vendor
+        }
+    )
+
 @router.get("/store", status_code=status.HTTP_200_OK)
 async def list_store_products(db: db_dependency, category: str = None):
     query = db.query(Product)
@@ -50,12 +72,6 @@ async def list_store_products(db: db_dependency, category: str = None):
 async def list_categories(db: db_dependency):
     categories = db.query(Product.category).distinct().all()
     return [c[0] for c in categories if c[0]]
-
-@router.get("/",status_code=status.HTTP_200_OK)
-async def list_products(vendor:vendor_dependency,db:db_dependency):
-    if vendor is None:
-        return RedirectResponse(url="/auth/login", status_code=302)
-    return db.query(Product).filter(Product.vendor_id == vendor.get('id')).all()
 
 @router.post("/",status_code=status.HTTP_201_CREATED)
 async def create_product(vendor:vendor_dependency,db:db_dependency,create_product_request:CreateProductRequest):

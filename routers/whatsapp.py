@@ -19,11 +19,12 @@ GROQ_API_KEY     = os.getenv("GROQ_API_KEY")
 @router.get("/")
 async def verify_webhook(request: Request):
     params = request.query_params
-    if (
-        params.get("hub.mode") == "subscribe"
-        and params.get("hub.verify_token") == VERIFY_TOKEN
-    ):
-        return Response(content=params.get("hub.challenge"), media_type="text/plain")
+    mode         = params.get("hub.mode") or params.get("hub_mode")
+    verify_token = params.get("hub.verify_token") or params.get("hub_verify_token")
+    challenge    = params.get("hub.challenge") or params.get("hub_challenge")
+
+    if mode == "subscribe" and verify_token == VERIFY_TOKEN:
+        return Response(content=challenge, media_type="text/plain")
     return Response(status_code=403)
 
 @router.post("/")
