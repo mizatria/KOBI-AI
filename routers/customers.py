@@ -40,7 +40,12 @@ class CustomerCreateRequest(BaseModel):
 async def list_customers_page(request: Request, vendor: vendor_dependency, db: db_dependency):
     if vendor is None:
         return RedirectResponse(url="/auth/login", status_code=302)
-    customers = db.query(Customer).all()
+
+    customers = db.query(Customer).join(Order, Order.customer_id == Customer.id) \
+        .filter(Order.vendor_id == vendor.get('id')) \
+        .distinct() \
+        .all()
+
     return templates.TemplateResponse(
         request=request,
         name="customers.html",

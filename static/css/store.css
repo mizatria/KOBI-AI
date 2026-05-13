@@ -713,7 +713,10 @@ body {
   min-height: 22px;
 }
 
-.form-feedback.success { color: var(--olive); }
+.form-feedback.success {
+  color: var(--olive);
+  white-space: pre-line;
+}
 .form-feedback.error   { color: #c0392b; }
 
 .stock-alert {

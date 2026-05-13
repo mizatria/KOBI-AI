@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sipariş Yönetimi | KOBİ-AI</title>
+    <!-- Font Inter olarak değiştirildi -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,6 +16,7 @@
             --copper: #C8935A; --white: #FFFFFF; --sidebar-width: 260px;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Font-family Inter yapıldı */
         body { font-family: 'Inter', sans-serif; background-color: var(--page-bg); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
 
         .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: #e8edd0; position: fixed; left: 0; top: 0; height: 100vh; padding: 24px; display: flex; flex-direction: column; z-index: 1000; }
@@ -60,7 +62,7 @@
 </head>
 <body>
     <aside class="sidebar">
-        <div class="sidebar-brand">📦 ESNAF</div>
+        <div class="sidebar-brand">📦 Kopi</div>
         <nav class="sidebar-nav">
             <a href="/dashboard/">📊 <span>Dashboard</span></a>
             <a href="/orders/" class="active">📦 <span>Siparişler</span></a>
@@ -86,14 +88,14 @@
         <div class="table-container">
             <table>
                 <thead>
-                    <tr><th>Sipariş No</th><th>Müşteri</th><th>Ürün ID</th><th>Adet</th><th>Toplam Tutar</th><th>Durum</th><th>İşlem</th></tr>
+                    <tr><th>Sipariş No</th><th>Müşteri</th><th>Ürün Adı</th><th>Adet</th><th>Toplam Tutar</th><th>Durum</th><th>İşlem</th></tr>
                 </thead>
                 <tbody>
                     {% for order in orders %}
                     <tr>
                         <td>#{{ order.id }}</td>
-                        <td>Müşteri #{{ order.customer_id }}</td>
-                        <td>{{ order.product_id }}</td>
+                        <td>{{ customer_map.get(order.customer_id, "Bilinmeyen Müşteri") }}</td>
+                        <td>{{ product_map.get(order.product_id, "Bilinmeyen Ürün") }}</td>
                         <td>{{ order.quantity }}</td>
                         <td style="font-weight:700;">₺{{ "{:,.2f}".format(order.price) }}</td>
                         <td>
@@ -120,6 +122,7 @@
         </div>
     </main>
 
+    <!-- Modallar -->
     <div id="addModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h2>Yeni Manuel Sipariş</h2><span class="close-btn" onclick="closeModal('addModal')">&times;</span></div>
@@ -149,8 +152,22 @@
             <div class="modal-header"><h2>Siparişi Güncelle</h2><span class="close-btn" onclick="closeModal('editModal')">&times;</span></div>
             <form id="editForm">
                 <input type="hidden" id="edit_id">
-                <div class="input-group"><label>Müşteri ID</label><input type="number" id="edit_customer_id" required></div>
-                <div class="input-group"><label>Ürün ID</label><input type="number" id="edit_product_id" required></div>
+                <div class="input-group">
+                    <label>Müşteri Değiştir</label>
+                    <select id="edit_customer_id" required>
+                        {% for c_id, c_name in customer_map.items() %}
+                        <option value="{{ c_id }}">{{ c_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Ürün Değiştir</label>
+                    <select id="edit_product_id" required>
+                        {% for p_id, p_name in product_map.items() %}
+                        <option value="{{ p_id }}">{{ p_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="input-group"><label>Miktar</label><input type="number" id="edit_quantity" step="0.1" required></div>
                 <div class="input-group">
                     <label>Durum</label>
@@ -203,12 +220,12 @@
             try {
                 const res = await fetch('/orders/manual', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
                 if(res.ok){
-    const result = await res.json();
-    const orderNum = result.order_id;
-    alert(`✅ Sipariş oluşturuldu!\n\nSipariş Numaranız: #${orderNum}\n\nMüşteriye bu numarayı bildirin — WhatsApp'tan sipariş durumu sorgulayabilir.`);
-    location.reload();
-}
-                else{const err=await res.json();alert('Hata: '+(err.detail||'Sipariş oluşturulamadı'));}
+                    const result = await res.json();
+                    alert(`✅ Sipariş oluşturuldu!\n\nSipariş Numaranız: #${result.order_id}`);
+                    location.reload();
+                } else {
+                    const err=await res.json();alert('Hata: '+(err.detail||'Sipariş oluşturulamadı'));
+                }
             } catch { alert('Sunucu hatası oluştu.'); }
         };
 

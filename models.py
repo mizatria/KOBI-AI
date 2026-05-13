@@ -1,3 +1,5 @@
+from sqlalchemy.orm import relationship
+
 from database import Base
 from sqlalchemy import Column, Integer, String,ForeignKey, Float, DateTime,Sequence
 from datetime import datetime
@@ -25,6 +27,7 @@ class Product(Base):
     unit=Column(String)
     category=Column(String)
     supplier_id=Column(Integer,ForeignKey('suppliers.id'),nullable=True)
+    supplier = relationship("Supplier", back_populates="products")
 
 class Supplier(Base):
     __tablename__='suppliers'
@@ -35,6 +38,7 @@ class Supplier(Base):
     phone_number=Column(String)
     email=Column(String)
     vendor_id=Column(Integer,ForeignKey('vendors.id'))
+    products = relationship("Product", back_populates="supplier")
 
 class Customer(Base):
     __tablename__='customers'

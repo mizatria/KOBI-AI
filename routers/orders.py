@@ -72,6 +72,10 @@ async def list_orders_page(request: Request, vendor: vendor_dependency, db: db_d
 
     orders = db.query(Order).filter(Order.vendor_id == vendor.get('id')).order_by(Order.created_at.desc()).all()
     products = db.query(Product).filter(Product.vendor_id == vendor.get('id')).all()
+    customers = db.query(Customer).all()
+
+    product_map = {p.id: p.name for p in products}
+    customer_map = {c.id: f"{c.first_name} {c.last_name}" for c in customers}
 
     return templates.TemplateResponse(
         request=request,
@@ -79,7 +83,9 @@ async def list_orders_page(request: Request, vendor: vendor_dependency, db: db_d
         context={
             "orders": orders,
             "products": products,
-            "vendor": vendor
+            "vendor": vendor,
+            "product_map": product_map,
+            "customer_map": customer_map,
         }
     )
 

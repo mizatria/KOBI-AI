@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 from langchain_core.messages import HumanMessage
 from langchain_groq import ChatGroq
-from models import Customer, Order, Product, Vendor
+from models import Customer, Order, Product, Vendor, Supplier  # Supplier eklendi
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload  # joinedload eklendi
 from routers.authentication import get_current_vendor
 from fastapi.responses import RedirectResponse
 
@@ -78,6 +78,7 @@ async def generate_daily_summary(
 async def dashboard(request: Request, vendor: vendor_dependency, db: db_dependency):
     if vendor is None:
         return RedirectResponse(url="/auth/login", status_code=302)
+
     vendor_id = int(vendor.get("id"))
     vendor_obj = db.query(Vendor).filter(Vendor.id == vendor_id).first()
 
@@ -88,6 +89,7 @@ async def dashboard(request: Request, vendor: vendor_dependency, db: db_dependen
     gecen_ay_basi = (now.date().replace(day=1) - timedelta(days=1)).replace(day=1)
     gecen_ay_start = datetime.combine(gecen_ay_basi, datetime.min.time())
 
+    # Bugünün Siparişleri
     bugun_sip = db.query(Order).filter(
         Order.vendor_id == vendor_id,
         Order.created_at >= bugun_start,
@@ -97,11 +99,13 @@ async def dashboard(request: Request, vendor: vendor_dependency, db: db_dependen
     bugunun_geliri = sum((o.price or 0) for o in bugun_sip)
     tamamlanan_siparis = sum(1 for o in bugun_sip if o.status == "Tamamlandı")
 
-    kritik_stoklar = db.query(Product).filter(
+    # KRİTİK STOKLAR GÜNCELLEMESİ: Tedarikçi bilgilerini join ile çekiyoruz
+    kritik_stoklar = db.query(Product).options(joinedload(Product.supplier)).filter(
         Product.vendor_id == vendor_id,
         Product.stock <= Product.min_stock_limit
     ).all()
 
+    # Aylık Veriler
     bu_ay_sip = db.query(Order).filter(
         Order.vendor_id == vendor_id,
         Order.created_at >= bu_ay_start
@@ -117,6 +121,7 @@ async def dashboard(request: Request, vendor: vendor_dependency, db: db_dependen
     gecen_ay_gelir = sum((o.price or 0) for o in gecen_ay_sip)
     gecen_ay_siparis_sayisi = len(gecen_ay_sip)
 
+    # Değişim Oranları
     gelir_degisim = (
         round(((bu_ay_gelir - gecen_ay_gelir) / gecen_ay_gelir) * 100, 1)
         if gecen_ay_gelir > 0 else 0
@@ -127,6 +132,7 @@ async def dashboard(request: Request, vendor: vendor_dependency, db: db_dependen
     )
     toplam_musteri = db.query(func.count(Customer.id)).scalar() or 0
 
+    # AI Analizi
     ai_ozet = await generate_daily_summary(
         bugunun_siparis_sayisi, bugunun_geliri, tamamlanan_siparis,
         kritik_stoklar, bu_ay_gelir, gecen_ay_gelir,

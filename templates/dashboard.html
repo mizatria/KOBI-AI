@@ -192,7 +192,25 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { text-align: left; padding: 15px; color: var(--accent-green); font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid var(--column-bg); }
         td { padding: 15px; border-bottom: 1px solid var(--column-bg); font-size: 0.95rem; }
-        .badge-low { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+
+        /* Buton Stili */
+        .badge-low-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-decoration: none;
+            display: inline-block;
+            border: 1px solid #fca5a5;
+            transition: all 0.2s;
+        }
+        .badge-low-btn:hover {
+            background: #fecaca;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(153, 27, 27, 0.2);
+        }
 
         @media (max-width: 1024px) {
             .sidebar { width: 80px; padding: 15px; }
@@ -207,7 +225,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            📦 <span>ESNAF</span>
+            📦 <span>Kopi</span>
         </div>
 
         <div class="nav-group">
@@ -289,9 +307,12 @@
 
         <!-- STOK UYARILARI -->
         <section class="table-container">
-            <h2 style="margin-bottom: 20px; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-                ⚠️ Kritik Stok Seviyeleri
-            </h2>
+            <div style="margin-bottom: 20px;">
+                <h2 style="font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                    ⚠️ Kritik Stok Seviyeleri
+                </h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Tedarikçiye otomatik WhatsApp mesajı göndermek için aşağıdaki <b>KRİTİK</b> butonuna tıklayınız.</p>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -310,7 +331,17 @@
                             <td><span style="color: #b91c1c; font-weight: 700;">{{ urun.stock }}</span></td>
                             <td>{{ urun.min_stock_limit }}</td>
                             <td>{{ urun.unit }}</td>
-                            <td><span class="badge-low">KRİTİK</span></td>
+                            <td>
+                                {% if urun.supplier %}
+                                <a href="https://wa.me/{{ urun.supplier.phone_number }}?text=Merhaba%20{{ urun.supplier.first_name }},%20'{{ urun.name }}'%20ürünümüzün%20stoğu%20kritik%20seviye%20olan%20{{ urun.stock }}%20{{ urun.unit }}%20miktarına%20düştü.%20Yeni%20sipariş%20oluşturmak%20istiyoruz."
+                                   target="_blank"
+                                   class="badge-low-btn">
+                                    KRİTİK
+                                </a>
+                                {% else %}
+                                <span class="badge-low-btn" style="background: #e5e7eb; color: #4b5563; border-color: #d1d5db; cursor: not-allowed;">KRİTİK</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     {% else %}

@@ -293,7 +293,13 @@ async function submitOrder() {
       return;
     }
 
-    showFeedback('✅ Siparişiniz alındı! Teşekkürler.', 'success');
+    showFeedback(
+  `✅ Siparişiniz alındı!\n` +
+  `Sipariş Numaranız: #${data.order_id}\n\n` +
+  `Siparişinizin durumu için bizimle WhatsApp üzerinden iletişime geçebilirsiniz. ` +
+  `AI asistanımız sizi saniyeler içinde yanıtlayacaktır. 📲`,
+  'success'
+);
 
     // Stok uyarısı varsa göster
     if (data.stock_alert) {
